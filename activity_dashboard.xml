@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/offline_bg">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
+                android:text="What Would You Like To Do Today?"
+                android:textColor="@color/text_dark"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+
+            <!-- Row 1: Data / Airtime -->
+            <LinearLayout style="@style/DashRow">
+                <LinearLayout android:id="@+id/cardData" style="@style/DashCard">
+                    <View style="@style/DashIconBg" />
+                    <ImageView style="@style/DashIconImg" android:src="@drawable/ic_data" />
+                    <TextView style="@style/DashLabel" android:text="Data" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/cardAirtime" style="@style/DashCard">
+                    <View style="@style/DashIconBg" />
+                    <ImageView style="@style/DashIconImg" android:src="@drawable/ic_airtime" />
+                    <TextView style="@style/DashLabel" android:text="Airtime" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row 2: Cable / Electricity -->
+            <LinearLayout style="@style/DashRow">
+                <LinearLayout android:id="@+id/cardCable" style="@style/DashCard">
+                    <View style="@style/DashIconBg" />
+                    <ImageView style="@style/DashIconImg" android:src="@drawable/ic_cable" />
+                    <TextView style="@style/DashLabel" android:text="Cable" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/cardElectricity" style="@style/DashCard">
+                    <View style="@style/DashIconBg" />
+                    <ImageView style="@style/DashIconImg" android:src="@drawable/ic_electricity" />
+                    <TextView style="@style/DashLabel" android:text="Electricity" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row 3: Edu Pins / Bulk SMS -->
+            <LinearLayout style="@style/DashRow">
+                <LinearLayout android:id="@+id/cardEduPins" style="@style/DashCard">
+                    <View style="@style/DashIconBg" />
+                    <ImageView style="@style/DashIconImg" android:src="@drawable/ic_edupin" />
+                    <TextView style="@style/DashLabel" android:text="Edu Pins" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/cardBulkSms" style="@style/DashCard">
+                    <View style="@style/DashIconBg" />
+                    <ImageView style="@style/DashIconImg" android:src="@drawable/ic_bulksms" />
+                    <TextView style="@style/DashLabel" android:text="Bulk SMS" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row 4: Recharge Pin / Airtime Swap -->
+            <LinearLayout style="@style/DashRow">
+                <LinearLayout android:id="@+id/cardRechargePin" style="@style/DashCard">
+                    <View style="@style/DashIconBg" />
+                    <ImageView style="@style/DashIconImg" android:src="@drawable/ic_rechargepin" />
+                    <TextView style="@style/DashLabel" android:text="Recharge Pin" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/cardAirtimeSwap" style="@style/DashCard">
+                    <View style="@style/DashIconBg" />
+                    <ImageView style="@style/DashIconImg" android:src="@drawable/ic_swap" />
+                    <TextView style="@style/DashLabel" android:text="Airtime Swap" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row 5: Withdraw (alone) -->
+            <LinearLayout style="@style/DashRow">
+                <LinearLayout android:id="@+id/cardWithdraw" style="@style/DashCard">
+                    <View style="@style/DashIconBg" />
+                    <ImageView style="@style/DashIconImg" android:src="@drawable/ic_bank" />
+                    <TextView style="@style/DashLabel" android:text="Withdraw" />
+                </LinearLayout>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom navigation -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:elevation="8dp">
+
+        <LinearLayout android:id="@+id/navHome" style="@style/BottomNavItem">
+            <TextView android:id="@+id/navHomeLabel" style="@style/BottomNavLabel" android:text="Home" android:textColor="@color/brand_purple" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/navHistory" style="@style/BottomNavItem">
+            <TextView style="@style/BottomNavLabel" android:text="History" />
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/navMe" style="@style/BottomNavItem">
+            <TextView style="@style/BottomNavLabel" android:text="Me" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

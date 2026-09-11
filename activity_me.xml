@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/offline_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/brand_purple"
+        android:padding="20dp">
+
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_backspace"
+            app:tint="@color/white"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:text="Me"
+            android:textColor="@color/white"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/menuProfile" style="@style/MeMenuItem">
+        <TextView style="@style/MeMenuLabel" android:text="Profile" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/menuUpgrade" style="@style/MeMenuItem">
+        <TextView style="@style/MeMenuLabel" android:text="Upgrade Account (Vendor/Agent)" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/menuSupport" style="@style/MeMenuItem">
+        <TextView style="@style/MeMenuLabel" android:text="Support" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/menuLogout" style="@style/MeMenuItem">
+        <TextView style="@style/MeMenuLabel" android:text="Logout" android:textColor="#D9534F" />
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="24dp" />
+
+    <LinearLayout android:id="@+id/menuDeleteAccount" style="@style/MeMenuItem">
+        <TextView style="@style/MeMenuLabel" android:text="Delete Account" android:textColor="#D9534F" />
+    </LinearLayout>
+
+</LinearLayout>

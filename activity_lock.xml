@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/offline_bg"
+    android:fillViewport="true">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:paddingTop="48dp"
+    android:paddingBottom="32dp">
+
+    <View
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:background="@drawable/lock_avatar_bg" />
+
+    <TextView
+        android:id="@+id/avatarInitial"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:layout_marginTop="-84dp"
+        android:gravity="center"
+        android:text="U"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Enter Passcode"
+        android:textColor="@color/text_dark"
+        android:textSize="21sp"
+        android:textStyle="bold" />
+
+    <!-- Progress dots -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="18dp">
+
+        <View android:id="@+id/dot0" android:layout_width="14dp" android:layout_height="14dp"
+            android:layout_margin="7dp" android:background="@drawable/pin_dot_empty" />
+        <View android:id="@+id/dot1" android:layout_width="14dp" android:layout_height="14dp"
+            android:layout_margin="7dp" android:background="@drawable/pin_dot_empty" />
+        <View android:id="@+id/dot2" android:layout_width="14dp" android:layout_height="14dp"
+            android:layout_margin="7dp" android:background="@drawable/pin_dot_empty" />
+        <View android:id="@+id/dot3" android:layout_width="14dp" android:layout_height="14dp"
+            android:layout_margin="7dp" android:background="@drawable/pin_dot_empty" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/errorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="#B23B3B"
+        android:textSize="13sp"
+        android:visibility="invisible"
+        android:text="Incorrect PIN" />
+
+    <!-- Number pad -->
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp"
+        android:columnCount="3"
+        android:rowCount="4">
+
+        <Button android:id="@+id/key1" style="@style/PinKey" android:text="1" />
+        <Button android:id="@+id/key2" style="@style/PinKey" android:text="2" />
+        <Button android:id="@+id/key3" style="@style/PinKey" android:text="3" />
+        <Button android:id="@+id/key4" style="@style/PinKey" android:text="4" />
+        <Button android:id="@+id/key5" style="@style/PinKey" android:text="5" />
+        <Button android:id="@+id/key6" style="@style/PinKey" android:text="6" />
+        <Button android:id="@+id/key7" style="@style/PinKey" android:text="7" />
+        <Button android:id="@+id/key8" style="@style/PinKey" android:text="8" />
+        <Button android:id="@+id/key9" style="@style/PinKey" android:text="9" />
+
+        <ImageButton
+            android:id="@+id/fingerprintKey"
+            style="@style/PinKeyBlank"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_fingerprint"
+            android:contentDescription="Use fingerprint"
+            android:padding="18dp" />
+
+        <Button android:id="@+id/key0" style="@style/PinKey" android:text="0" />
+
+        <ImageButton
+            android:id="@+id/deleteKey"
+            style="@style/PinKeyBlank"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_backspace"
+            android:contentDescription="Delete"
+            android:padding="18dp" />
+
+    </GridLayout>
+
+    <TextView
+        android:id="@+id/switchAccountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="Switch account"
+        android:textColor="#D9534F"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:padding="8dp" />
+
+</LinearLayout>
+</ScrollView>
