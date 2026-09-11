@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.TrueData" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_purple</item>
+        <item name="colorPrimaryDark">@color/brand_purple</item>
+        <item name="android:statusBarColor">@color/brand_purple</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <!-- Splash screen theme: full-screen brand-color background with your logo centered -->
+    <style name="Theme.TrueData.Splash" parent="Theme.TrueData">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:statusBarColor">@color/brand_purple</item>
+    </style>
+
+    <!-- Number pad key on the lock screen -->
+    <style name="PinKey">
+        <item name="android:layout_width">76dp</item>
+        <item name="android:layout_height">76dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:background">@drawable/pin_key_bg</item>
+        <item name="android:textColor">@color/text_dark</item>
+        <item name="android:textSize">26sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <!-- Blank (icon-only) key, same footprint as a number key -->
+    <style name="PinKeyBlank">
+        <item name="android:layout_width">76dp</item>
+        <item name="android:layout_height">76dp</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <!-- Dashboard grid row: two cards side by side -->
+    <style name="DashRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <!-- Dashboard grid card (one feature) -->
+    <style name="DashCard">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:background">@drawable/dashboard_card_bg</item>
+        <item name="android:paddingVertical">22dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- Gradient square behind each dashboard icon -->
+    <style name="DashIconBg">
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:background">@drawable/dashboard_icon_gradient</item>
+        <item name="android:layout_marginBottom">-60dp</item>
+    </style>
+
+    <!-- The icon itself, centered over the gradient square above -->
+    <style name="DashIconImg">
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:layout_marginBottom">14dp</item>
+    </style>
+
+    <style name="DashLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_dark</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Bottom nav item -->
+    <style name="BottomNavItem">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="BottomNavLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#999999</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Me screen menu row -->
+    <style name="MeMenuItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:paddingHorizontal">20dp</item>
+        <item name="android:paddingVertical">18dp</item>
+        <item name="android:layout_marginTop">1dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="MeMenuLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_dark</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches your dashboard's blue/purple brand color - change this to match your exact brand hex -->
+    <color name="brand_purple">#5A55D2</color>
+    <color name="white">#FFFFFF</color>
+    <color name="offline_bg">#F5F6FA</color>
+    <color name="text_dark">#2B2B2B</color>
+</resources>
