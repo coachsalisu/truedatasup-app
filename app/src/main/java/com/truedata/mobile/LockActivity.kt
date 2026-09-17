@@ -18,22 +18,33 @@ class LockActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_lock)
+        try {
+            setContentView(R.layout.activity_lock)
 
-        pinStore = PinStore(this)
+            pinStore = PinStore(this)
 
-        dots = listOf(
-            findViewById(R.id.dot0), findViewById(R.id.dot1),
-            findViewById(R.id.dot2), findViewById(R.id.dot3)
-        )
-        errorText = findViewById(R.id.errorText)
+            dots = listOf(
+                findViewById(R.id.dot0), findViewById(R.id.dot1),
+                findViewById(R.id.dot2), findViewById(R.id.dot3)
+            )
+            errorText = findViewById(R.id.errorText)
 
-        setupNumberPad()
-        setupFingerprintKey()
-        setupSwitchAccount()
+            setupNumberPad()
+            setupFingerprintKey()
+            setupSwitchAccount()
 
-        if (canUseBiometric()) {
-            showBiometricPrompt()
+            if (canUseBiometric()) {
+                showBiometricPrompt()
+            }
+        } catch (e: Throwable) {
+            val sw = java.io.StringWriter()
+            e.printStackTrace(java.io.PrintWriter(sw))
+            android.app.AlertDialog.Builder(this)
+                .setTitle("Lock screen crashed")
+                .setMessage(sw.toString())
+                .setCancelable(false)
+                .setPositiveButton("Close") { _, _ -> finishAffinity() }
+                .show()
         }
     }
 
