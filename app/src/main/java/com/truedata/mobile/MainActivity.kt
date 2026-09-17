@@ -147,7 +147,14 @@ class MainActivity : AppCompatActivity() {
                 // Route every request through the offline cache: it tries the
                 // live network first and only falls back to a saved copy if
                 // that fails. Returning null here means "handle normally".
-                return offlineCache.intercept(request)
+                return try {
+                    offlineCache.intercept(request)
+                } catch (e: Throwable) {
+                    // Never let a problem here crash the app - this runs on
+                    // every single request the page makes, so it must fail
+                    // safe. Falling back to null just means "load normally".
+                    null
+                }
             }
 
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
@@ -174,8 +181,19 @@ class MainActivity : AppCompatActivity() {
                         url == "https://truedata.com.ng/mobile/home/index.php" ||
                         url == "https://truedata.com.ng/mobile/"
                 if (isRawDashboard) {
-                    startActivity(Intent(this@MainActivity, DashboardActivity::class.java))
-                    finish()
+                    try {
+                        startActivity(Intent(this@MainActivity, DashboardActivity::class.java))
+                        finish()
+                    } catch (e: Throwable) {
+                        val sw = java.io.StringWriter()
+                        e.printStackTrace(java.io.PrintWriter(sw))
+                        android.app.AlertDialog.Builder(this@MainActivity)
+                            .setTitle("Dashboard switch crashed")
+                            .setMessage(sw.toString())
+                            .setCancelable(false)
+                            .setPositiveButton("Close") { _, _ -> finishAffinity() }
+                            .show()
+                    }
                 }
             }
 
