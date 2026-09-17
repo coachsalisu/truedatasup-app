@@ -34,35 +34,4 @@ class DashboardActivity : AppCompatActivity() {
         openFeature(R.id.cardElectricity, "home/electricity")
         openFeature(R.id.cardEduPins, "home/exam-pins")
         openFeature(R.id.cardBulkSms, "home/bulk-sms")
-        openFeature(R.id.cardRechargePin, "home/recharge-pin")
-        openFeature(R.id.cardAirtimeSwap, "home/airtime-to-cash")
-        openFeature(R.id.cardWithdraw, "home/withdraw-to-bank")
-
-        openFeature(R.id.navHistory, "home/transactions")
-
-        findViewById<LinearLayout>(R.id.navMe).setOnClickListener {
-            startActivity(Intent(this, MeActivity::class.java))
-        }
-        // navHome does nothing - we're already here.
-    }
-
-    private fun openFeature(viewId: Int, path: String) {
-        findViewById<LinearLayout>(viewId).setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("TARGET_PATH", path)
-            startActivity(intent)
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (pinStore.isPinSet() && !AppLockState.isUnlockedThisSession) {
-            lockLauncher.launch(Intent(this, LockActivity::class.java))
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        AppLockState.isUnlockedThisSession = false
-    }
-}
+        
