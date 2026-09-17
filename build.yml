@@ -1,0 +1,74 @@
+name: Build TrueData App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # FIX: GitHub recently defaulted Actions to Node 24, which the
+      # android-actions/setup-android tool isn't fully compatible with yet.
+      # This opts back into Node 20 for this run, as GitHub's own warning
+      # message suggests, until that action is updated.
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Android build tools
+        uses: android-actions/setup-android@v3
+        with:
+          # FIX: this action's own built-in license-acceptance attempt is
+          # crashing (a bug on its end when prompting non-interactively).
+          # Turning it off here and relying entirely on our own separate
+          # "Accept all Android SDK licenses" step below instead, which
+          # already works correctly.
+          accept-android-sdk-licenses: false
+
+      - name: Accept all Android SDK licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Restore the signing key
+        env:
+          TRUEDATA_KEYSTORE_BASE64: ${{ secrets.TRUEDATA_KEYSTORE_BASE64 }}
+        run: |
+          echo "$TRUEDATA_KEYSTORE_BASE64" | base64 -d > truedata-upload-key.jks
+
+      - name: Build the signed app (.aab for Play Store)
+        env:
+          TRUEDATA_KEYSTORE_PATH: ${{ github.workspace }}/truedata-upload-key.jks
+          TRUEDATA_KEYSTORE_PASSWORD: ${{ secrets.TRUEDATA_KEYSTORE_PASSWORD }}
+        run: gradle bundleRelease
+
+      - name: Also build a plain .apk (for testing on your own phone)
+        env:
+          TRUEDATA_KEYSTORE_PATH: ${{ github.workspace }}/truedata-upload-key.jks
+          TRUEDATA_KEYSTORE_PASSWORD: ${{ secrets.TRUEDATA_KEYSTORE_PASSWORD }}
+        run: gradle assembleRelease
+
+      - name: Upload the Play Store file (.aab)
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrueData-for-PlayStore
+          path: app/build/outputs/bundle/release/app-release.aab
+
+      - name: Upload the testing file (.apk)
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrueData-for-testing
+          path: app/build/outputs/apk/release/app-release.apk
