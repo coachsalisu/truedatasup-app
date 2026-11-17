@@ -148,7 +148,11 @@ class MainActivity : AppCompatActivity() {
             loadWithOverviewMode = true
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             mediaPlaybackRequiresUserGesture = false
+            textZoom = 100
+            userAgentString = userAgentString + " TrueDataApp/1.1"
         }
+        CookieManager.getInstance().setAcceptCookie(true)
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
 
         // Lets the website hand a just-confirmed PIN to the app for secure
         // local storage (as a salted hash - see PinStore). The site only
@@ -174,43 +178,24 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                // Keep every truedata.com.ng link inside the app; only send truly external
-                // links (e.g. WhatsApp, a payment gateway) out to their own app/browser.
                 val url = request.url.toString()
-                return if (url.contains("truedata.com.ng")) {
-                    false
-                } else {
-                    try {
-                        startActivity(Intent(Intent.ACTION_VIEW, request.url))
-                    } catch (_: Exception) { }
-                    true
+                val host = request.url.host ?: ""
+                val scheme = (request.url.scheme ?: "").lowercase()
+                if (scheme == "about" || scheme == "data" || scheme == "blob" || scheme == "javascript") {
+                    return false
                 }
+                // Our own site stays inside the app.
+                if ((url.startsWith("https://") || url.startsWith("http://")) &&
+                    (host == "truedata.com.ng" || host.endsWith(".truedata.com.ng"))) {
+                    return false
+                }
+                openOutside(url)
+                return true
             }
 
             override fun onPageFinished(view: WebView, url: String) {
                 swipeRefresh.isRefreshing = false
-
-                // The website's own JS sends people here after a successful
-                // login or registration+PIN setup. The moment we land here,
-                // switch to the native dashboard instead of showing this page.
-                val isRawDashboard = url == "https://truedata.com.ng/mobile/home/" ||
-                        url == "https://truedata.com.ng/mobile/home/index.php" ||
-                        url == "https://truedata.com.ng/mobile/"
-                if (isRawDashboard) {
-                    try {
-                        startActivity(Intent(this@MainActivity, DashboardActivity::class.java))
-                        finish()
-                    } catch (e: Throwable) {
-                        val sw = java.io.StringWriter()
-                        e.printStackTrace(java.io.PrintWriter(sw))
-                        android.app.AlertDialog.Builder(this@MainActivity)
-                            .setTitle("Dashboard switch crashed")
-                            .setMessage(sw.toString())
-                            .setCancelable(false)
-                            .setPositiveButton("Close") { _, _ -> finishAffinity() }
-                            .show()
-                    }
-                }
+                CookieManager.getInstance().flush()
             }
 
             override fun onReceivedError(
@@ -251,13 +236,24 @@ class MainActivity : AppCompatActivity() {
 
         // Handles file downloads (e.g. transaction receipts) via the system Download Manager
         webView.setDownloadListener { url, _, contentDisposition, mimeType, _ ->
-            val request = DownloadManager.Request(Uri.parse(url))
-            request.setMimeType(mimeType)
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            val fileName = URLUtilGuessFileName(url, contentDisposition, mimeType)
-            request.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, fileName)
-            val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            dm.enqueue(request)
+            try {
+                if (!url.startsWith("http")) {
+                    // blob:/data: files (e.g. receipt images) can't go to Download Manager.
+                    android.widget.Toast.makeText(this, "Use the Share or Save Image button on the page", android.widget.Toast.LENGTH_SHORT).show()
+                    return@setDownloadListener
+                }
+                val request = DownloadManager.Request(Uri.parse(url))
+                request.setMimeType(mimeType)
+                request.addRequestHeader("Cookie", CookieManager.getInstance().getCookie(url) ?: "")
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                val fileName = URLUtilGuessFileName(url, contentDisposition, mimeType)
+                request.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, fileName)
+                val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                dm.enqueue(request)
+                android.widget.Toast.makeText(this, "Downloading...", android.widget.Toast.LENGTH_SHORT).show()
+            } catch (_: Throwable) {
+                android.widget.Toast.makeText(this, "Download failed", android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -266,14 +262,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSwipeRefresh() {
-        swipeRefresh.setColorSchemeResources(R.color.brand_purple)
-        swipeRefresh.setOnRefreshListener {
-            if (isOnline()) {
-                webView.reload()
+        // Pull-to-refresh is OFF: on pages with their own scrolling list (data
+        // plans etc.) it fired while customers scrolled, reloading the page.
+        swipeRefresh.isEnabled = false
+    }
+
+    /** Opens WhatsApp, phone, RawBT printer (intent:), Play Store or any other site outside the app. */
+    private fun openOutside(url: String) {
+        try {
+            if (url.startsWith("intent:")) {
+                val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+                intent.addCategory(Intent.CATEGORY_BROWSABLE)
+                intent.component = null
+                try {
+                    startActivity(intent)
+                } catch (e: android.content.ActivityNotFoundException) {
+                    val fallback = intent.getStringExtra("browser_fallback_url")
+                    val pkg = intent.`package`
+                    when {
+                        fallback != null -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(fallback)))
+                        pkg != null -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$pkg")))
+                    }
+                }
             } else {
-                swipeRefresh.isRefreshing = false
-                android.widget.Toast.makeText(this, "Still offline - showing saved data", android.widget.Toast.LENGTH_SHORT).show()
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
             }
+        } catch (_: Throwable) {
+            android.widget.Toast.makeText(this, "No app found to open this link", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -304,12 +319,33 @@ class MainActivity : AppCompatActivity() {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (webView.canGoBack()) {
+        if (offlineLayout.visibility == View.VISIBLE) {
+            showExitDialog()
+            return
+        }
+        val url = webView.url ?: ""
+        val onHome = url.trimEnd('/').endsWith("/mobile/home") ||
+                url.endsWith("/mobile/home/index.php") || url.trimEnd('/').endsWith("/mobile")
+        if (!onHome && webView.canGoBack()) {
             webView.goBack()
         } else {
-            super.onBackPressed()
+            showExitDialog()
         }
+    }
+
+    private fun showExitDialog() {
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Leave TrueDataSUP?")
+            .setItems(arrayOf("Exit app", "Minimize", "Cancel")) { dialog, which ->
+                when (which) {
+                    0 -> finishAffinity()
+                    1 -> moveTaskToBack(true)
+                    else -> dialog.dismiss()
+                }
+            }
+            .show()
     }
 
     override fun onResume() {
@@ -331,6 +367,11 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton("Close") { _, _ -> finishAffinity() }
                 .show()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        CookieManager.getInstance().flush()
     }
 
     override fun onStop() {
