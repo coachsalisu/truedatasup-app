@@ -24,7 +24,10 @@ class SplashActivity : AppCompatActivity() {
             when (resultCode) {
                 RESULT_OK -> {
                     AppLockState.isUnlockedThisSession = true
-                    startActivity(Intent(this, DashboardActivity::class.java))
+                    // Open the website's own dashboard (real balance, cashback, accounts).
+                    val home = Intent(this, MainActivity::class.java)
+                    home.putExtra("TARGET_PATH", "home/")
+                    startActivity(home)
                     finish()
                 }
                 RESULT_FIRST_USER -> {
