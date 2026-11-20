@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.net.http.SslError
@@ -24,6 +25,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var offlineLayout: LinearLayout
+    private var lastGoodUrl: String? = null
+    private var netCallback: ConnectivityManager.NetworkCallback? = null
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private val targetUrl by lazy {
@@ -150,7 +153,11 @@ class MainActivity : AppCompatActivity() {
             mediaPlaybackRequiresUserGesture = false
             textZoom = 100
             userAgentString = userAgentString + " TrueDataApp/1.1"
+            // smoother scrolling: draw the parts of the page just off-screen in advance
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) offscreenPreRaster = true
         }
+        // draw the page with the phone's graphics chip (smoother scrolling and animations)
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         CookieManager.getInstance().setAcceptCookie(true)
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
 
@@ -196,6 +203,10 @@ class MainActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView, url: String) {
                 swipeRefresh.isRefreshing = false
                 CookieManager.getInstance().flush()
+                // remember the last real page, so Retry / reconnect returns here
+                if (offlineLayout.visibility != View.VISIBLE && (url.startsWith("https://") || url.startsWith("http://"))) {
+                    lastGoodUrl = url
+                }
             }
 
             override fun onReceivedError(
@@ -296,12 +307,42 @@ class MainActivity : AppCompatActivity() {
         val retryButton = findViewById<Button>(R.id.retryButton)
         retryButton.setOnClickListener {
             if (isOnline()) {
-                hideOffline()
-                webView.loadUrl(targetUrl)
+                reloadAfterOffline()
             } else {
-                android.widget.Toast.makeText(this, "Still no internet connection", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(this, "Still no internet. Turn on mobile data or Wi-Fi.", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
+        // Come back by itself as soon as the phone gets internet again.
+        try {
+            val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val cb = object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    runOnUiThread {
+                        if (offlineLayout.visibility == View.VISIBLE) {
+                            webView.postDelayed({
+                                if (offlineLayout.visibility == View.VISIBLE) reloadAfterOffline()
+                            }, 1200)
+                        }
+                    }
+                }
+            }
+            cm.registerDefaultNetworkCallback(cb)
+            netCallback = cb
+        } catch (_: Throwable) { }
+    }
+
+    private fun reloadAfterOffline() {
+        hideOffline()
+        webView.loadUrl(lastGoodUrl ?: targetUrl)
+    }
+
+    override fun onDestroy() {
+        try {
+            netCallback?.let {
+                (getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).unregisterNetworkCallback(it)
+            }
+        } catch (_: Throwable) { }
+        super.onDestroy()
     }
 
     private fun showOffline() {
