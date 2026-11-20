@@ -15,42 +15,74 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <!-- Shown only when there is no internet connection -->
+    <!-- Shown only when the main page can't load (no internet).
+         Comes back by itself when the network returns (MainActivity). -->
     <LinearLayout
         android:id="@+id/offlineLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/offline_bg"
-        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center"
+        android:orientation="vertical"
         android:padding="32dp"
         android:visibility="gone">
+
+        <FrameLayout
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:background="@drawable/offline_icon_bg">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center"
+                android:contentDescription="No internet"
+                android:src="@drawable/ic_wifi_off" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/offlineTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/offline_title"
+            android:layout_marginTop="24dp"
+            android:text="You're offline"
             android:textColor="@color/text_dark"
-            android:textSize="18sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/offline_message"
-            android:textColor="@color/text_dark"
-            android:textSize="14sp" />
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:lineSpacingExtra="3dp"
+            android:text="Your phone has no internet right now.\nTurn on mobile data or Wi-Fi.\nYour wallet and account are safe."
+            android:textColor="#6B7280"
+            android:textSize="15sp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/retryButton"
+            android:layout_width="220dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/offline_button_bg"
+            android:stateListAnimator="@null"
+            android:text="Try again"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/retry"
-            android:backgroundTint="@color/brand_purple"
-            android:textColor="@color/white" />
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="TrueDataSUP will reconnect by itself\nas soon as your internet is back."
+            android:textColor="#9CA3AF"
+            android:textSize="13sp" />
 
     </LinearLayout>
 
