@@ -19,12 +19,14 @@ class WelcomeActivity : AppCompatActivity() {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra("TARGET_PATH", "register/")
                 startActivity(intent)
+                finish()
             }
 
             findViewById<Button>(R.id.loginButton).setOnClickListener {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra("TARGET_PATH", "login/")
                 startActivity(intent)
+                finish()
             }
         } catch (e: Throwable) {
             showCrash(e)
