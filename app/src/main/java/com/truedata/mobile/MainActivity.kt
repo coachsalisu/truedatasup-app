@@ -30,8 +30,14 @@ class MainActivity : AppCompatActivity() {
 
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private val targetUrl by lazy {
-        val path = intent.getStringExtra("TARGET_PATH") ?: ""
-        "https://truedata.com.ng/mobile/" + path.removePrefix("/")
+        var path = (intent.getStringExtra("TARGET_PATH") ?: "").removePrefix("/")
+        // Android may rebuild this screen from its first intent (e.g. "register/"
+        // from the Welcome screen) after the app was closed in the background.
+        // If quick login is set up on this phone, always go to the dashboard.
+        if ((path.startsWith("login") || path.startsWith("register")) && pinStore.isPinSet()) {
+            path = "home/"
+        }
+        "https://truedata.com.ng/mobile/$path"
     }
     private val offlineCache by lazy { OfflineCache(this) }
     private val pinStore by lazy { PinStore(this) }
@@ -48,7 +54,17 @@ class MainActivity : AppCompatActivity() {
             when (requestCode) {
                 LOCK_REQUEST_CODE -> {
                     when (resultCode) {
-                        RESULT_OK -> AppLockState.isUnlockedThisSession = true
+                        RESULT_OK -> {
+                            AppLockState.isUnlockedThisSession = true
+                            // Unlocked with PIN/fingerprint while sitting on the login or
+                            // register page -> go to the dashboard (the website logs the
+                            // customer back in with this phone's quick-login key).
+                            val cur = webView.url ?: ""
+                            if (cur.contains("/mobile/login") || cur.contains("/mobile/register") ||
+                                cur.trimEnd('/').endsWith("/mobile")) {
+                                webView.loadUrl("https://truedata.com.ng/mobile/home/")
+                            }
+                        }
                         RESULT_FIRST_USER -> {
                             // "Switch account" - PIN was cleared, send them to a fresh login.
                             AppLockState.isUnlockedThisSession = true
